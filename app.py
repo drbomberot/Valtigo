@@ -13,45 +13,30 @@ import hashlib
 
 root = ctk.CTk()
 root.title("Valtigo")
-root.after(201, lambda :root.iconbitmap('C:\Code Bank\python bank\icon.ico'))
 root.configure(corner_radius=20)
 ctk.set_appearance_mode("dark")
 
-goodpass = ctk.CTkToplevel(root)
+goodpass = ctk.CTk()
 goodpass.title("Valtigo")
 goodpass.geometry("500x400")
-goodpass.iconbitmap("icon.ico")
 
-
-setpwrd = ctk.CTkToplevel(root)
+setpwrd = ctk.CTk()
 setpwrd.title("Valtigo")
 setpwrd.geometry("500x400")
-setpwrd.iconbitmap("icon.ico")
 
-
-youshalnotpass = ctk.CTkToplevel(root)
+youshalnotpass = ctk.CTk()
 youshalnotpass.title("You Shall Not Pass!")
 youshalnotpass.geometry("500x400")
-youshalnotpass.iconbitmap("icon.ico")
 
-
-loginaddgui = ctk.CTkToplevel(root)
+loginaddgui = ctk.CTk()
 loginaddgui.title("Login Saver")
 loginaddgui.geometry("500x400")
-loginaddgui.iconbitmap("icon.ico")
 
-
-pwordlist = ctk.CTkToplevel(root)
+pwordlist = ctk.CTk()
 pwordlist.title("Saved Passwords")
 pwordlist.geometry("500x400")
-pwordlist.iconbitmap("icon.ico")
 
 
-goodpass.withdraw()
-setpwrd.withdraw()
-youshalnotpass.withdraw()
-loginaddgui.withdraw()
-pwordlist.withdraw()
 
 window_width = 500
 window_height = 400
@@ -79,9 +64,11 @@ os.makedirs(valtigo_folder, exist_ok=True)
 ecrpt = os.path.join(valtigo_folder, "ecrypt.valtigo")
 nigol = os.path.join(valtigo_folder, "users.valtigo")
 KEYFILE = os.path.join(valtigo_folder, "key.key")
+config_path = os.path.join(valtigo_folder, "config.valtigo")
 
-config_path = "assets\config.txt"
-
+if not os.path.exists(config_path):
+    with open(config_path, 'w') as createfile:
+        pass
 with open(config_path, "r") as file:
     theme_config_choice = file.read()
 ctk.set_default_color_theme(f"{theme_config_choice}")
@@ -113,21 +100,6 @@ def logout():
 def closegoodpass():
         goodpass.withdraw()
         logout()
-
-def update_slider_value(value):
-    global slider_value
-    slider_value = float(value)
-
-def apply_scale(value):    
-    scale = slider_value / 50
-    new_width = int(window_width * scale)
-    new_height = int(window_height * scale)
-    new_x = (screen_width // 2) - (new_width // 2)
-    new_y = (screen_height // 2) - (new_height // 2)
-
-    root.geometry(f"{new_width}x{new_height}+{new_x}+{new_y}")
-    if float(value) == 50:
-        ext()
 
 def passconfirmed():
     global master_password
@@ -213,7 +185,7 @@ def theme_picker(choice):
         pass
     elif choice == "Red":
         pass
-    with open("assets\config.txt","w") as file:
+    with open(config_path,"w") as file:
         file.write(f"assets\{choice}.json")
     rebuild_widgets()
     theme_picket_confirm = ctk.CTkToplevel(root)
@@ -285,6 +257,9 @@ def get_or_create_keyfile():
         pass
     return key
 
+def closepwordlist():
+    pwordlist.withdraw()
+
 def encrypt_with_keyfile(plain_password: str) -> str:
     key = get_or_create_keyfile()
     f = Fernet(key)
@@ -300,6 +275,7 @@ def openpsswordmanagr():
     pwordlist.title("Saved Passwords")
 
     ctk.CTkLabel(pwordlist, text="Saved Accounts", font=ctk.CTkFont(size=14, weight="bold")).pack(pady=5)
+    ctk.CTkButton(pwordlist, text="Close", command=closepwordlist).pack(pady=5)
 
     scroll_frame = ctk.CTkScrollableFrame(pwordlist, width=460, height=340)
     scroll_frame.pack(padx=10, pady=10, fill="both", expand=True)
@@ -331,11 +307,6 @@ right_frame.pack(side="right", expand=True, fill="both", padx=5, pady=5)
 ctk.CTkLabel(right_frame, text="CatMan's Demonstration Vault! \n Enter Password:", font=font_one).pack(pady=10)
 login_password_entry = ctk.CTkEntry(right_frame, show="*")
 login_password_entry.pack(pady=5)
-
-scale_slider = ctk.CTkSlider(left_frame, from_=20, to=100, number_of_steps=100, command=update_slider_value, orientation="vertical")
-scale_slider.set(0)
-scale_slider.pack(expand=True, fill="y")
-scale_slider.bind("<ButtonRelease-1>", apply_scale)
 
 submit_btn = ctk.CTkButton(right_frame, text="Submit", command=check_password, corner_radius=100)
 submit_btn.pack(pady=5)
